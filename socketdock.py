@@ -6,6 +6,7 @@ from sanic import Sanic, text
 from backend import Backend
 
 from testbackend import TestBackend
+from httpbackend import HTTPBackend
 
 parser = argparse.ArgumentParser(
     prog="SocketDock",
@@ -13,12 +14,16 @@ parser = argparse.ArgumentParser(
 parser.add_argument('--bindip', default='127.0.0.1')
 parser.add_argument('--bindport', default=8765)
 parser.add_argument('--externalhostandport', default="127.0.0.1:8765")
-parser.add_argument('--backend', default="loopback", choices=["loopback"])
+parser.add_argument('--backend', default="loopback", choices=["loopback", "http"])
+parser.add_argument('--message_uri')
+parser.add_argument('--disconnect_uri')
 
 args = parser.parse_args()
 
 if args.backend == "loopback":
     backend = TestBackend()
+elif args.backend == "http":
+    backend = HTTPBackend(args.message_uri, args.disconnect_uri)
 
 app = Sanic("SocketDock")
 
