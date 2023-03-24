@@ -1,0 +1,5 @@
+.git
+docker-compose.yaml
+socket_client.py
+__pycache__/
+*.pyc

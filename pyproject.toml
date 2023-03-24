@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "socketdock"
+version = "0.1.0"
+description = ""
+authors = [
+	"Sam Curren <telegramsam@gmail.com>",
+	"Colton Wolkins (Indicio work address) <colton@indicio.tech>",
+]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+aiohttp = "^3.8.4"
+sanic = "^22.12.0"
+
+[tool.poetry.group.dev.dependencies]
+websocket = "^0.2.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
