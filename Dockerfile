@@ -9,6 +9,6 @@ COPY poetry.lock pyproject.toml /code/
 RUN poetry config virtualenvs.create false \
   && poetry install --no-dev --no-interaction --no-ansi
 
-COPY . .
+COPY server .
 
 CMD [ "python", "./socketdock.py" ]
