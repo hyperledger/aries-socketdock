@@ -15,8 +15,8 @@ sanic = "^22.12.0"
 
 [tool.poetry.group.dev.dependencies]
 websocket = "^0.2.1"
-black = "^23.3.0"
-flake8 = "^6.0.0"
+black = "^22"
+flake8 = "^5"
 pre-commit = "^3.2.2"
 
 [build-system]
