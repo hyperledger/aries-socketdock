@@ -2,7 +2,7 @@ import asyncio
 import websockets
 import logging
 import argparse
-from sanic import Sanic, text
+from sanic import Request, Sanic, Websocket, text
 from backend import Backend
 
 from testbackend import TestBackend
@@ -27,7 +27,7 @@ elif args.backend == "http":
 
 app = Sanic("SocketDock")
 
-app.config.WEBSOCKET_MAX_SIZE = 2^22
+app.config.WEBSOCKET_MAX_SIZE = 2**22
 app.config.LOGGING = True
 
 logging.basicConfig(level=logging.INFO)
@@ -52,7 +52,7 @@ async def socket_send(request, connectionid):
     return text('OK')
 
 @app.websocket("/ws")
-async def socket_handler(request, websocket):
+async def socket_handler(request: Request, websocket: Websocket):
     try:
         #register user
         logging.info(f"new client connected")
@@ -61,9 +61,7 @@ async def socket_handler(request, websocket):
         logging.info(f"Existing connections: {', '.join(activeconnections.keys())}")
         logging.info(f"added connection {socket_id}")
 
-        
         async for message in websocket:
-            print(f"< {message}")
             await backend.inbound_socket_message({
                 'connection_id': socket_id,
                 'send': f"http://{args.externalhostandport}/socket/{socket_id}/send"
