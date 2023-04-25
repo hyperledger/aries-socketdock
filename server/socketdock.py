@@ -1,9 +1,7 @@
-import asyncio
-import websockets
 import logging
 import argparse
 from sanic import Request, Sanic, Websocket, text
-from backend import Backend
+
 
 from testbackend import TestBackend
 from httpbackend import HTTPBackend
@@ -32,7 +30,7 @@ app.config.LOGGING = True
 
 logging.basicConfig(level=logging.INFO)
 
-## TODO: track timestamp of connections when connected
+# TODO: track timestamp of connections when connected
 activeconnections = {}
 
 
@@ -58,7 +56,7 @@ async def socket_send(request, connectionid):
 async def socket_handler(request: Request, websocket: Websocket):
     try:
         # register user
-        logging.info(f"new client connected")
+        logging.info("new client connected")
         socket_id = websocket.connection.id.hex
         activeconnections[socket_id] = websocket
         logging.info(f"Existing connections: {', '.join(activeconnections.keys())}")

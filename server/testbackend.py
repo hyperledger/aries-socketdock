@@ -1,6 +1,5 @@
 from backend import Backend
 import aiohttp
-import asyncio
 
 
 class TestBackend(Backend):

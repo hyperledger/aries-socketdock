@@ -1,7 +1,6 @@
 import logging
 from backend import Backend
 import aiohttp
-import asyncio
 
 
 class HTTPBackend(Backend):
@@ -12,7 +11,7 @@ class HTTPBackend(Backend):
     async def inbound_socket_message(self, callback_uris: dict, message: str):
         http_body = {"meta": callback_uris, "message": message}
 
-        send_uri = callback_uris["send"]
+        # send_uri = callback_uris["send"]
         async with aiohttp.ClientSession() as session:
             logging.info(f"Posting message {http_body} to {self._message_uri}")
             async with session.post(self._message_uri, json=http_body) as resp:
