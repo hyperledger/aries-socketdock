@@ -9,7 +9,11 @@ class HTTPBackend(Backend):
         self._disconnect_uri = disconnect_uri
 
     async def inbound_socket_message(self, callback_uris: dict, message: str):
-        http_body = {"meta": callback_uris, "message": message}
+
+        http_body = {
+            "meta": callback_uris,
+            "message": message.decode("utf-8") if isinstance(message, bytes) else message
+        }
 
         # send_uri = callback_uris["send"]
         async with aiohttp.ClientSession() as session:
@@ -18,6 +22,8 @@ class HTTPBackend(Backend):
                 logging.info(resp)
                 response = await resp.text()
                 logging.info(response)
+                # Post the response back to ourselves so it makes it to the websocket
+                # await session.post(send_uri, data=response)
 
         # response = requests.post(send_uri, data="Hello yourself!")
 
