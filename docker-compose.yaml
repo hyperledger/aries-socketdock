@@ -8,10 +8,12 @@ services:
     volumes:
       - ./server:/code
     entrypoint: python ./socketdock.py
-    command: --bindip 0.0.0.0 --backend http --message_uri ${LAMBDA_ENDPOINT} --externalhostandport ${EXTERNAL_HOST_PORT}
-      # parser.add_argument('--bindip', default='127.0.0.1')
-      # parser.add_argument('--bindport', default=8765)
-      # parser.add_argument('--externalhostandport', default="127.0.0.1:8765")
-      # parser.add_argument('--backend', default="loopback", choices=["loopback", "http"])
-      # parser.add_argument('--message_uri')
-      # parser.add_argument('--disconnect_uri')
+    command: --bindip 0.0.0.0 --backend http --message_uri ${LAMBDA_ENDPOINT} --disconnect_uri ${LAMBDA_DISCONNECT_ENDPOINT} --externalhostandport ${EXTERNAL_HOST_PORT}
+
+    # Socket Dock Parameters:
+    # parser.add_argument('--bindip', default='127.0.0.1')
+    # parser.add_argument('--bindport', default=8765)
+    # parser.add_argument('--externalhostandport', default="127.0.0.1:8765")
+    # parser.add_argument('--backend', default="loopback", choices=["loopback", "http"])
+    # parser.add_argument('--message_uri')
+    # parser.add_argument('--disconnect_uri')
