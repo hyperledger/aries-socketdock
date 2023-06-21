@@ -15,6 +15,8 @@ These reference what the instance of SocketDock is running on. This is where inb
 ### `messageuri`
 This is the HTTP endpoint of whatever backend that SocketDock is in front of. SocketDock will pass messages, along with some metadata, to this endpoint.
 
+**Note:** this is sent as a string, not a JSON object
+
 ```
 {
     "meta": {
