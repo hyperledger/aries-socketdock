@@ -34,6 +34,7 @@ logging.basicConfig(level=logging.INFO)
 activeconnections = {}
 
 
+@app.get("/test")
 @app.post("/test")
 async def test_handler(request):
     return text("OK")
@@ -48,7 +49,7 @@ async def socket_send(request, connectionid):
         return text("FAIL", status=500)
 
     socket = activeconnections[connectionid]
-    await socket.send(request.body)
+    await socket.send(request.body.decode('utf-8'))
     return text("OK")
 
 
