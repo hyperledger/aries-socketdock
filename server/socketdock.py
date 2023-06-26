@@ -1,6 +1,7 @@
+import time
 import logging
 import argparse
-from sanic import Request, Sanic, Websocket, text
+from sanic import Request, Sanic, Websocket, text, json
 
 
 from testbackend import TestBackend
@@ -25,6 +26,8 @@ elif args.backend == "http":
 
 app = Sanic("SocketDock")
 
+launchtime = time.time_ns()
+
 app.config.WEBSOCKET_MAX_SIZE = 2**22
 app.config.LOGGING = True
 
@@ -32,12 +35,22 @@ logging.basicConfig(level=logging.INFO)
 
 # TODO: track timestamp of connections when connected
 activeconnections = {}
+lifetimeconnections = 0
 
 
-@app.get("/test")
-@app.post("/test")
-async def test_handler(request):
-    return text("OK")
+@app.get("/status")
+async def status_handler(request):
+    uptime = (time.time_ns() - launchtime)
+    return json({
+        "uptime": {
+            "ns": uptime,
+            "seconds": int(uptime / 1000000000),  # ns -> second conversion
+        },
+        "connections": {
+            "active": len(activeconnections),
+            "lifetime": lifetimeconnections,
+        },
+    })
 
 
 @app.post("/socket/<connectionid>/send")
@@ -55,11 +68,13 @@ async def socket_send(request, connectionid):
 
 @app.websocket("/ws")
 async def socket_handler(request: Request, websocket: Websocket):
+    global lifetimeconnections
     try:
         # register user
         logging.info("new client connected")
         socket_id = websocket.connection.id.hex
         activeconnections[socket_id] = websocket
+        lifetimeconnections += 1
         logging.info(f"Existing connections: {', '.join(activeconnections.keys())}")
         logging.info(f"added connection {socket_id}")
 
