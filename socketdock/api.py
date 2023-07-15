@@ -49,7 +49,7 @@ async def socket_send(request: Request, connectionid: str):
         return text("FAIL", status=500)
 
     socket = active_connections[connectionid]
-    await socket.send(request.body.decode("utf-8"))
+    await socket.send(request.body)
     return text("OK")
 
 
