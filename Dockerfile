@@ -1,14 +1,15 @@
-FROM python:3.9
+FROM python:3.9-slim-bullseye
+WORKDIR /usr/src/app
 
-ENV POETRY_VERSION=1.3.2
+ENV POETRY_VERSION=1.4.2
 
-WORKDIR /code
-
+RUN apt-get update && apt-get install -y curl && apt-get clean
 RUN pip install "poetry==$POETRY_VERSION"
-COPY poetry.lock pyproject.toml /code/
+COPY poetry.lock pyproject.toml README.md ./
+RUN mkdir -p socketdock && touch socketdock/__init__.py
 RUN poetry config virtualenvs.create false \
-  && poetry install --no-dev --no-interaction --no-ansi
+  && poetry install --without=dev --no-interaction --no-ansi
 
-COPY server .
+COPY socketdock socketdock
 
-CMD [ "python", "./socketdock.py" ]
+ENTRYPOINT ["python",  "-m", "socketdock" ]

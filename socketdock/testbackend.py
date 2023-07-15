@@ -1,9 +1,17 @@
-from backend import Backend
+"""Test backend for SocketDock."""
+
+from typing import Union
 import aiohttp
+
+from .backend import Backend
 
 
 class TestBackend(Backend):
-    async def inbound_socket_message(self, callback_uris: dict, message: str):
+    """Test backend for SocketDock."""
+
+    async def inbound_socket_message(
+        self, callback_uris: dict, message: Union[str, bytes]
+    ):
         # send three backend messages in response
         # TODO: send response message via callback URI for sending a message
         send_uri = callback_uris["send"]

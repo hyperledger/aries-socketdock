@@ -1,0 +1,88 @@
+"""API endpoints for the server."""
+
+from contextvars import ContextVar
+import logging
+import time
+
+from sanic import Blueprint, Request, Websocket, json, text
+
+from .backend import Backend
+
+backend_var: ContextVar[Backend] = ContextVar("backend")
+endpoint_var: ContextVar[str] = ContextVar("endpoint")
+
+api = Blueprint("api", url_prefix="/")
+
+LOGGER = logging.getLogger(__name__)
+
+LAUNCH_TIME = time.time_ns()
+# TODO: track timestamp of connections when connected
+active_connections = {}
+lifetime_connections = 0
+
+
+@api.get("/status")
+async def status_handler(request: Request):
+    """Return status information about the server."""
+    uptime = time.time_ns() - LAUNCH_TIME
+    return json(
+        {
+            "uptime": {
+                "ns": uptime,
+                "seconds": int(uptime / 1000000000),  # ns -> second conversion
+            },
+            "connections": {
+                "active": len(active_connections),
+                "lifetime": lifetime_connections,
+            },
+        }
+    )
+
+
+@api.post("/socket/<connectionid>/send")
+async def socket_send(request: Request, connectionid: str):
+    """Send a message to a connected socket."""
+    LOGGER.info("Inbound message for %s", connectionid)
+    LOGGER.info("Existing connections: %s", active_connections.keys())
+
+    if connectionid not in active_connections:
+        return text("FAIL", status=500)
+
+    socket = active_connections[connectionid]
+    await socket.send(request.body.decode("utf-8"))
+    return text("OK")
+
+
+@api.websocket("/ws")
+async def socket_handler(request: Request, websocket: Websocket):
+    """Handle a new websocket connection."""
+    global lifetime_connections
+    backend = backend_var.get()
+    socket_id = None
+    try:
+        # register user
+        LOGGER.info("new client connected")
+        socket_id = websocket.connection.id.hex
+        active_connections[socket_id] = websocket
+        lifetime_connections += 1
+        LOGGER.info("Existing connections: %s", active_connections.keys())
+        LOGGER.info("Added connection: %s", socket_id)
+
+        async for message in websocket:
+            if message:
+                await backend.inbound_socket_message(
+                    {
+                        "connection_id": socket_id,
+                        "send": f"{endpoint_var.get()}/socket/{socket_id}/send",
+                    },
+                    message,
+                )
+            else:
+                LOGGER.warning("empty message received")
+
+    finally:
+        # unregister user
+        if socket_id:
+            del active_connections[socket_id]
+            LOGGER.info("Removed connection: %s", socket_id)
+            await backend.socket_disconnected({"connection_id": socket_id})
