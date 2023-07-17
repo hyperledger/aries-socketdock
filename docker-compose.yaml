@@ -6,9 +6,13 @@ services:
     ports:
       - "8765:8765"
     volumes:
-      - ./server:/code
-    entrypoint: python ./socketdock.py
-    command: --bindip 0.0.0.0 --backend http --message_uri ${LAMBDA_ENDPOINT} --disconnect_uri ${LAMBDA_DISCONNECT_ENDPOINT} --externalhostandport ${EXTERNAL_HOST_PORT}
+      - ./socketdock:/usr/src/app/socketdock:z
+    command: >
+      --bindip 0.0.0.0
+      --backend http
+      --message-uri ${LAMBDA_ENDPOINT}
+      --disconnect-uri ${LAMBDA_DISCONNECT_ENDPOINT}
+      --endpoint ${EXTERNAL_ENDPOINT}
 
     # Socket Dock Parameters:
     # parser.add_argument('--bindip', default='127.0.0.1')

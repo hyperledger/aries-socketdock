@@ -9,7 +9,12 @@ services:
       - ./server:/code
       - ./wait-for-tunnel.sh:/wait-for-tunnel.sh:ro,z
     entrypoint: /wait-for-tunnel.sh
-    command: python ./socketdock.py --bindip 0.0.0.0 --backend http --message_uri ${LAMBDA_ENDPOINT}
+    command: >
+      python -m socketdock
+      --bindip 0.0.0.0
+      --backend http
+      --message-uri ${LAMBDA_ENDPOINT}
+
     # parser.add_argument('--bindip', default='127.0.0.1')
     # parser.add_argument('--bindport', default=8765)
     # parser.add_argument('--externalhostandport', default="127.0.0.1:8765")
