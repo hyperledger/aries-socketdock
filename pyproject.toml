@@ -1,10 +1,12 @@
 [tool.poetry]
 name = "socketdock"
-version = "0.1.0"
-description = ""
+version = "0.1.0a0"
+description = "Websocket relay service for use with clustered mediators"
 authors = [
 	"Sam Curren <telegramsam@gmail.com>",
 	"Colton Wolkins (Indicio work address) <colton@indicio.tech>",
+    "Micah Peltier <micah@indicio.tech>",
+    "Daniel Bluhm <dbluhm@pm.me>",
 ]
 readme = "README.md"
 
