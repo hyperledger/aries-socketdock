@@ -8,8 +8,8 @@ Maintainers are assigned the following scopes in this repository:
 | ---------- | --------------------- | ----------- | --------------------------------------- |
 | Admin      | The GitHub Admin Role | Admin       | [aries-admins]                          |
 | Write      | The GitHub Write role | Write       | [aries-cloudagent-python committers]    |
-| Maintainer | The GitHub Read role  |             | [aries-socketdock-committers]           |
-| Read       | The GitHub Write role | Write       | [aries-framework-javascript committers] |
+| Maintainer | The GitHub Read role  | Maintainer  | [aries-socketdock-committers]           |
+| Write      | The GitHub Write role | Write       | [aries-framework-javascript committers] |
 
 [aries-admins]: https://github.com/orgs/hyperledger/teams/aries-admins
 [aries-cloudagent-python committers]: https://github.com/orgs/hyperledger/teams/aries-cloudagent-python-committers
