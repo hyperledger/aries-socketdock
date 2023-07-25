@@ -8,6 +8,13 @@ class Backend(ABC):
     """Backend interface for SocketDock."""
 
     @abstractmethod
+    async def inbound_connected(
+        self, callback_uris: dict
+    ):
+        """Handle inbound socket message, with calback provided."""
+        raise NotImplementedError()
+
+    @abstractmethod
     async def inbound_socket_message(
         self, callback_uris: dict, message: Union[str, bytes]
     ):

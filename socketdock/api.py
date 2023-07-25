@@ -68,6 +68,13 @@ async def socket_handler(request: Request, websocket: Websocket):
         LOGGER.info("Existing connections: %s", active_connections.keys())
         LOGGER.info("Added connection: %s", socket_id)
 
+        await backend.inbound_connected(
+                {
+                "connection_id": socket_id,
+                "send": f"{endpoint_var.get()}/socket/{socket_id}/send",
+                },
+        )
+
         async for message in websocket:
             if message:
                 await backend.inbound_socket_message(
