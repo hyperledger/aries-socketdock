@@ -20,7 +20,6 @@ class HTTPBackend(Backend):
         self._message_uri = message_uri
         self._disconnect_uri = disconnect_uri
 
-    @abstractmethod
     async def inbound_connected(
         self, callback_uris: dict
     ):
