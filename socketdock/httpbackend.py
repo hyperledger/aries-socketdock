@@ -14,7 +14,7 @@ LOGGER = logging.getLogger(__name__)
 class HTTPBackend(Backend):
     """HTTP backend for SocketDock."""
 
-    def __init__(self, connect: str, message_uri: str, disconnect_uri: str):
+    def __init__(self, connect_uri: str, message_uri: str, disconnect_uri: str):
         """Initialize HTTP backend."""
         self._connect_uri = connect_uri
         self._message_uri = message_uri

@@ -67,10 +67,12 @@ async def socket_handler(request: Request, websocket: Websocket):
         lifetime_connections += 1
         LOGGER.info("Existing connections: %s", active_connections.keys())
         LOGGER.info("Added connection: %s", socket_id)
+        LOGGER.info("Request headers: %s", dict(request.headers.items()))
 
         await backend.inbound_connected(
                 {
                 "connection_id": socket_id,
+                "headers": dict(request.headers.items()),
                 "send": f"{endpoint_var.get()}/socket/{socket_id}/send",
                 },
         )
