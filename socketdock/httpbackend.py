@@ -30,15 +30,15 @@ class HTTPBackend(Backend):
             "meta": callback_uris,
         }
 
-        if self._message_uri:
+        if self._connect_uri:
             async with aiohttp.ClientSession() as session:
-            LOGGER.info("Posting message %s to %s", http_body, self._message_uri)
-            async with session.post(self._message_uri, json=http_body) as resp:
-                response = await resp.text()
-                if resp.status != 200:
-                LOGGER.error("Error posting message: %s", response)
-                else:
-                LOGGER.debug("Response: %s", response)
+                LOGGER.info("Posting message %s to %s", http_body, self._connect_uri)
+                async with session.post(self._connect_uri, json=http_body) as resp:
+                    response = await resp.text()
+                    if resp.status != 200:
+                        LOGGER.error("Error posting message: %s", response)
+                    else:
+                        LOGGER.debug("Response: %s", response)
 
     async def inbound_socket_message(
         self, callback_uris: dict, message: Union[str, bytes]
