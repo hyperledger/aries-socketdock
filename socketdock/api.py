@@ -52,6 +52,20 @@ async def socket_send(request: Request, connectionid: str):
     await socket.send(request.body)
     return text("OK")
 
+@api.post("/socket/<connectionid>/send_text")
+async def socket_send(request: Request, connectionid: str):
+    """Send a message to a connected socket."""
+    LOGGER.info("Inbound message for %s", connectionid)
+    LOGGER.info("Existing connections: %s", active_connections.keys())
+
+    if connectionid not in active_connections:
+        return text("FAIL", status=500)
+
+    socket = active_connections[connectionid]
+    LOGGER.info(request.json)
+    await socket.send(request.json["text"])
+    return text("OK")
+
 
 @api.websocket("/ws")
 async def socket_handler(request: Request, websocket: Websocket):
@@ -74,6 +88,7 @@ async def socket_handler(request: Request, websocket: Websocket):
                 "connection_id": socket_id,
                 "headers": dict(request.headers.items()),
                 "send": f"{endpoint_var.get()}/socket/{socket_id}/send",
+                "send_text": f"{endpoint_var.get()}/socket/{socket_id}/send_text",
                 },
         )
 
@@ -83,6 +98,7 @@ async def socket_handler(request: Request, websocket: Websocket):
                     {
                         "connection_id": socket_id,
                         "send": f"{endpoint_var.get()}/socket/{socket_id}/send",
+                        "send_text": f"{endpoint_var.get()}/socket/{socket_id}/send_text",                        
                     },
                     message,
                 )
