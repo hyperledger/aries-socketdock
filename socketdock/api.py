@@ -42,8 +42,9 @@ async def status_handler(request: Request):
 @api.post("/socket/<connectionid>/send")
 async def socket_send(request: Request, connectionid: str):
     """Send a message to a connected socket."""
-    LOGGER.info("Inbound message for %s", connectionid)
-    LOGGER.info("Existing connections: %s", active_connections.keys())
+    if LOGGER.isEnabledFor(logging.INFO):
+        LOGGER.info("Inbound message for %s", connectionid)
+        LOGGER.info("Existing connections: %s", active_connections.keys())
 
     if connectionid not in active_connections:
         return text("FAIL", status=500)
@@ -55,17 +56,31 @@ async def socket_send(request: Request, connectionid: str):
 @api.post("/socket/<connectionid>/send_text")
 async def socket_send(request: Request, connectionid: str):
     """Send a message to a connected socket."""
-    LOGGER.info("Inbound message for %s", connectionid)
-    LOGGER.info("Existing connections: %s", active_connections.keys())
+    if LOGGER.isEnabledFor(logging.INFO):
+        LOGGER.info("Inbound message for %s", connectionid)
+        LOGGER.info("Existing connections: %s", active_connections.keys())
 
     if connectionid not in active_connections:
         return text("FAIL", status=500)
 
     socket = active_connections[connectionid]
-    LOGGER.info(request.json)
     await socket.send(request.json["text"])
     return text("OK")
 
+
+@api.post("/socket/<connectionid>/disconnect")
+async def socket_send(request: Request, connectionid: str):
+    """Send a message to a connected socket."""
+    if LOGGER.isEnabledFor(logging.INFO):
+        LOGGER.info("Disconnect %s", connectionid)
+        LOGGER.info("Existing connections: %s", active_connections.keys())
+
+    if connectionid not in active_connections:
+        return text("FAIL", status=500)
+
+    socket = active_connections[connectionid]
+    await socket.close()
+    return text("OK")
 
 @api.websocket("/ws")
 async def socket_handler(request: Request, websocket: Websocket):
@@ -79,9 +94,10 @@ async def socket_handler(request: Request, websocket: Websocket):
         socket_id = websocket.connection.id.hex
         active_connections[socket_id] = websocket
         lifetime_connections += 1
-        LOGGER.info("Existing connections: %s", active_connections.keys())
-        LOGGER.info("Added connection: %s", socket_id)
-        LOGGER.info("Request headers: %s", dict(request.headers.items()))
+        if LOGGER.isEnabledFor(logging.INFO):
+            LOGGER.info("Existing connections: %s", active_connections.keys())
+            LOGGER.info("Added connection: %s", socket_id)
+            LOGGER.info("Request headers: %s", dict(request.headers.items()))
 
         await backend.inbound_connected(
                 {
@@ -89,6 +105,7 @@ async def socket_handler(request: Request, websocket: Websocket):
                 "headers": dict(request.headers.items()),
                 "send": f"{endpoint_var.get()}/socket/{socket_id}/send",
                 "send_text": f"{endpoint_var.get()}/socket/{socket_id}/send_text",
+                "disconnect": f"{endpoint_var.get()}/socket/{socket_id}/disconnect",
                 },
         )
 
@@ -98,7 +115,8 @@ async def socket_handler(request: Request, websocket: Websocket):
                     {
                         "connection_id": socket_id,
                         "send": f"{endpoint_var.get()}/socket/{socket_id}/send",
-                        "send_text": f"{endpoint_var.get()}/socket/{socket_id}/send_text",                        
+                        "send_text": f"{endpoint_var.get()}/socket/{socket_id}/send_text", 
+                        "disconnect": f"{endpoint_var.get()}/socket/{socket_id}/disconnect",                       
                     },
                     message,
                 )
@@ -109,5 +127,6 @@ async def socket_handler(request: Request, websocket: Websocket):
         # unregister user
         if socket_id:
             del active_connections[socket_id]
-            LOGGER.info("Removed connection: %s", socket_id)
+            if LOGGER.isEnabledFor(logging.INFO):
+                LOGGER.info("Removed connection: %s", socket_id)
             await backend.socket_disconnected({"connection_id": socket_id})
