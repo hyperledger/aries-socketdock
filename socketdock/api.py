@@ -52,7 +52,7 @@ async def socket_send(request: Request, connectionid: str):
     await socket.send(request.body)
     return text("OK")
 
-@api.post("/socket/<connectionid>/send_text")
+@api.post("/socket/<connectionid>/send-text")
 async def socket_send(request: Request, connectionid: str):
     """Send a message to a connected socket."""
     LOGGER.info("Inbound message for %s", connectionid)
