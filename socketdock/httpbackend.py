@@ -20,7 +20,7 @@ class HTTPBackend(Backend):
         self._message_uri = message_uri
         self._disconnect_uri = disconnect_uri
 
-    async def inbound_connected(
+    async def socket_connected(
         self, callback_uris: dict
     ):
         """Handle inbound socket message, with calback provided."""
