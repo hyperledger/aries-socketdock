@@ -95,12 +95,12 @@ async def socket_handler(request: Request, websocket: Websocket):
         LOGGER.info("Added connection: %s", socket_id)
         LOGGER.info("Request headers: %s", dict(request.headers.items()))
 
-        await backend.inbound_connected(
+        await backend.socket_connected(
                 {
                 "connection_id": socket_id,
                 "headers": dict(request.headers.items()),
                 "send": f"{endpoint_var.get()}/socket/{socket_id}/send",
-                "send_text": f"{endpoint_var.get()}/socket/{socket_id}/send_text",
+                "send-text": f"{endpoint_var.get()}/socket/{socket_id}/send-text",
                 "disconnect": f"{endpoint_var.get()}/socket/{socket_id}/disconnect",
                 },
         )
@@ -111,7 +111,7 @@ async def socket_handler(request: Request, websocket: Websocket):
                     {
                         "connection_id": socket_id,
                         "send": f"{endpoint_var.get()}/socket/{socket_id}/send",
-                        "send_text": f"{endpoint_var.get()}/socket/{socket_id}/send_text", 
+                        "send-text": f"{endpoint_var.get()}/socket/{socket_id}/send-text", 
                         "disconnect": f"{endpoint_var.get()}/socket/{socket_id}/disconnect",                       
                     },
                     message,
