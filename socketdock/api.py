@@ -42,9 +42,8 @@ async def status_handler(request: Request):
 @api.post("/socket/<connectionid>/send")
 async def socket_send(request: Request, connectionid: str):
     """Send a message to a connected socket."""
-    if LOGGER.isEnabledFor(logging.INFO):
-        LOGGER.info("Inbound message for %s", connectionid)
-        LOGGER.info("Existing connections: %s", active_connections.keys())
+    LOGGER.info("Inbound message for %s", connectionid)
+    LOGGER.info("Existing connections: %s", active_connections.keys())
 
     if connectionid not in active_connections:
         return text("FAIL", status=500)
@@ -56,9 +55,8 @@ async def socket_send(request: Request, connectionid: str):
 @api.post("/socket/<connectionid>/send_text")
 async def socket_send(request: Request, connectionid: str):
     """Send a message to a connected socket."""
-    if LOGGER.isEnabledFor(logging.INFO):
-        LOGGER.info("Inbound message for %s", connectionid)
-        LOGGER.info("Existing connections: %s", active_connections.keys())
+    LOGGER.info("Inbound message for %s", connectionid)
+    LOGGER.info("Existing connections: %s", active_connections.keys())
 
     if connectionid not in active_connections:
         return text("FAIL", status=500)
@@ -71,9 +69,8 @@ async def socket_send(request: Request, connectionid: str):
 @api.post("/socket/<connectionid>/disconnect")
 async def socket_send(request: Request, connectionid: str):
     """Send a message to a connected socket."""
-    if LOGGER.isEnabledFor(logging.INFO):
-        LOGGER.info("Disconnect %s", connectionid)
-        LOGGER.info("Existing connections: %s", active_connections.keys())
+    LOGGER.info("Disconnect %s", connectionid)
+    LOGGER.info("Existing connections: %s", active_connections.keys())
 
     if connectionid not in active_connections:
         return text("FAIL", status=500)
@@ -94,10 +91,9 @@ async def socket_handler(request: Request, websocket: Websocket):
         socket_id = websocket.connection.id.hex
         active_connections[socket_id] = websocket
         lifetime_connections += 1
-        if LOGGER.isEnabledFor(logging.INFO):
-            LOGGER.info("Existing connections: %s", active_connections.keys())
-            LOGGER.info("Added connection: %s", socket_id)
-            LOGGER.info("Request headers: %s", dict(request.headers.items()))
+        LOGGER.info("Existing connections: %s", active_connections.keys())
+        LOGGER.info("Added connection: %s", socket_id)
+        LOGGER.info("Request headers: %s", dict(request.headers.items()))
 
         await backend.inbound_connected(
                 {
@@ -127,6 +123,5 @@ async def socket_handler(request: Request, websocket: Websocket):
         # unregister user
         if socket_id:
             del active_connections[socket_id]
-            if LOGGER.isEnabledFor(logging.INFO):
-                LOGGER.info("Removed connection: %s", socket_id)
+            LOGGER.info("Removed connection: %s", socket_id)
             await backend.socket_disconnected({"connection_id": socket_id})
