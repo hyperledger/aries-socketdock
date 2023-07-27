@@ -53,8 +53,8 @@ async def socket_send(request: Request, connectionid: str):
     return text("OK")
 
 @api.post("/socket/<connectionid>/send-text")
-async def socket_send(request: Request, connectionid: str):
-    """Send a message to a connected socket."""
+async def socket_send_text(request: Request, connectionid: str):
+    """Send a text message to a connected socket."""
     LOGGER.info("Inbound message for %s", connectionid)
     LOGGER.info("Existing connections: %s", active_connections.keys())
 
@@ -67,8 +67,8 @@ async def socket_send(request: Request, connectionid: str):
 
 
 @api.post("/socket/<connectionid>/disconnect")
-async def socket_send(request: Request, connectionid: str):
-    """Send a message to a connected socket."""
+async def socket_disconnect(request: Request, connectionid: str):
+    """Disconnect a socket."""
     LOGGER.info("Disconnect %s", connectionid)
     LOGGER.info("Existing connections: %s", active_connections.keys())
 
