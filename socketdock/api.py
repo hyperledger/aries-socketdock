@@ -49,22 +49,11 @@ async def socket_send(request: Request, connectionid: str):
         return text("FAIL", status=500)
 
     socket = active_connections[connectionid]
-    await socket.send(request.body)
+    if request.headers["content-type"] == 'text/plain':
+        await socket.send(request.body.decode())
+    else:
+        await socket.send(request.body)
     return text("OK")
-
-@api.post("/socket/<connectionid>/send-text")
-async def socket_send_text(request: Request, connectionid: str):
-    """Send a text message to a connected socket."""
-    LOGGER.info("Inbound message for %s", connectionid)
-    LOGGER.info("Existing connections: %s", active_connections.keys())
-
-    if connectionid not in active_connections:
-        return text("FAIL", status=500)
-
-    socket = active_connections[connectionid]
-    await socket.send(request.json["text"])
-    return text("OK")
-
 
 @api.post("/socket/<connectionid>/disconnect")
 async def socket_disconnect(request: Request, connectionid: str):
@@ -100,7 +89,6 @@ async def socket_handler(request: Request, websocket: Websocket):
                 "connection_id": socket_id,
                 "headers": dict(request.headers.items()),
                 "send": f"{endpoint_var.get()}/socket/{socket_id}/send",
-                "send-text": f"{endpoint_var.get()}/socket/{socket_id}/send-text",
                 "disconnect": f"{endpoint_var.get()}/socket/{socket_id}/disconnect",
                 },
         )
@@ -111,7 +99,6 @@ async def socket_handler(request: Request, websocket: Websocket):
                     {
                         "connection_id": socket_id,
                         "send": f"{endpoint_var.get()}/socket/{socket_id}/send",
-                        "send-text": f"{endpoint_var.get()}/socket/{socket_id}/send-text", 
                         "disconnect": f"{endpoint_var.get()}/socket/{socket_id}/disconnect",                       
                     },
                     message,
