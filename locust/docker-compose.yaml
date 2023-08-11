@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  locust-socketdock:
+    build: .
+    ports:
+      - "8089:8089"
+      - "4242:4242"
+    volumes:
+      - ./:/usr/src/app/locust:z
+
+  websocket-gateway:
+    build: ../
+    ports:
+      - "8765:8765"
+    volumes:
+      - ../socketdock:/usr/src/app/socketdock:z
+    command: >
+      --bindip 0.0.0.0
+      --backend http
+      --connect-uri http://locust-socketdock:4242/connect
+      --message-uri http://locust-socketdock:4242/message
+      --disconnect-uri http://locust-socketdock:4242/disconnect
+      --endpoint http://websocket-gateway:8765
+      --log-level WARNING
