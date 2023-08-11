@@ -1,5 +1,4 @@
 from locust import events
-from sanic import Sanic, Blueprint, Request, Websocket, json, text
 from flask import Flask
 
 import time
@@ -13,8 +12,6 @@ import signal
 
 from websocket import create_connection
 import websocket 
-
-from api import api
 
 import sys
 import gevent
@@ -59,16 +56,6 @@ class InboundHTTP(metaclass=Singleton):
     _self = None
 
     def __init__(self):
-        # app = Sanic("LocustTest")
-        # app.config.WEBSOCKET_MAX_SIZE = 2**22
-        # app.config.LOGGING = True
-        # app.blueprint(api)
-
-        # Note: This needs to run as a single process to maintain the context
-        # between the active_connections structure and the connected sockets. This
-        # needs to be clustered _externally_ in order to scale beyond the
-        # capability of a single instance.
-        # gevent.spawn(app.run, host="0.0.0.0", port=4242, single_process=True, register_sys_signals=False)
 
         app = Flask(__name__)
 
@@ -138,13 +125,3 @@ class CustomClient:
             raise Exception("Not Connected!")
         self.ws.send(f"Ping! ({i})")
         pass
-        #r = requests.post(
-        #    os.getenv('ISSUER_URL') + '/connections/' + connection_id + '/send-message', 
-        #    json={
-        #        "content": "ping"
-        #    },
-        #    headers=headers
-        #    )
-        #r = r.json()
-
-        #return r
