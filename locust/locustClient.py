@@ -11,12 +11,13 @@ import requests
 import signal
 
 from websocket import create_connection
-import websocket 
+import websocket
 
 import sys
 import gevent
 
 gevent.monkey.patch_all()
+
 
 def stopwatch(func):
     def wrapper(*args, **kwargs):
@@ -30,27 +31,34 @@ def stopwatch(func):
             result = func(*args, **kwargs)
         except Exception as e:
             total = int((time.time() - start) * 1000)
-            events.request_failure.fire(request_type="TYPE",
-                                        name=file_name + '_' + task_name,
-                                        response_time=total,
-                                        exception=e,
-                                        response_length=0)
+            events.request_failure.fire(
+                request_type="TYPE",
+                name=file_name + "_" + task_name,
+                response_time=total,
+                exception=e,
+                response_length=0,
+            )
         else:
             total = int((time.time() - start) * 1000)
-            events.request_success.fire(request_type="TYPE",
-                                        name=file_name + '_' + task_name,
-                                        response_time=total,
-                                        response_length=0)
+            events.request_success.fire(
+                request_type="TYPE",
+                name=file_name + "_" + task_name,
+                response_time=total,
+                response_length=0,
+            )
         return result
 
     return wrapper
 
+
 class Singleton(type):
     _instances = {}
+
     def __call__(cls, *args, **kwargs):
         if cls not in cls._instances:
             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
+
 
 class InboundHTTP(metaclass=Singleton):
     _self = None
@@ -63,15 +71,15 @@ class InboundHTTP(metaclass=Singleton):
         def hello_world():
             return "<p>Hello, World!</p>"
 
-        @app.route("/connect", methods=['POST'])
+        @app.route("/connect", methods=["POST"])
         def connect():
-            return "<p>Hello, World!</p>"    
+            return "<p>Hello, World!</p>"
 
-        @app.route("/disconnect", methods=['POST'])
+        @app.route("/disconnect", methods=["POST"])
         def disconnect():
             return "<p>Hello, World!</p>"
 
-        @app.route("/message", methods=['POST'])
+        @app.route("/message", methods=["POST"])
         def message():
             return "<p>Hello, World!</p>"
 
@@ -79,6 +87,7 @@ class InboundHTTP(metaclass=Singleton):
 
     def track(self):
         print(f"TODO track event at {self.api_url}")
+
 
 class CustomClient:
     def __init__(self, host):
@@ -92,7 +101,7 @@ class CustomClient:
         server = InboundHTTP()
 
         # Give a sec for the inbound server to start
-        time.sleep(5)# Magic Number
+        time.sleep(5)  # Magic Number
 
         self.connected = False
 
@@ -108,19 +117,23 @@ class CustomClient:
         # Debugging stuff
         # websocket.enableTrace(True)
 
-        self.ws = websocket.WebSocketApp("ws://websocket-gateway:8765/ws", on_message=on_message, on_open=on_open, on_close=on_close)
-        gevent.spawn(self.ws.run_forever) 
+        self.ws = websocket.WebSocketApp(
+            "ws://websocket-gateway:8765/ws",
+            on_message=on_message,
+            on_open=on_open,
+            on_close=on_close,
+        )
+        gevent.spawn(self.ws.run_forever)
 
         while not self.connected:
             time.sleep(1)
 
-        
     def shutdown(self):
         self.ws.close()
-        
+
     @stopwatch
     def msg_client(self):
-        i = ''
+        i = ""
         if self.connected == False:
             raise Exception("Not Connected!")
         self.ws.send(f"Ping! ({i})")
