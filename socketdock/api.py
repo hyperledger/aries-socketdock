@@ -21,7 +21,9 @@ active_connections = {}
 lifetime_connections = 0
 
 
-@api.get("/status")
+# Temporarily disabled due to lack of authorization
+# TODO: Add route authorization controls
+# @api.get("/status")
 async def status_handler(request: Request):
     """Return status information about the server."""
     uptime = time.time_ns() - LAUNCH_TIME
