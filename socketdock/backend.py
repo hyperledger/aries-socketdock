@@ -8,9 +8,7 @@ class Backend(ABC):
     """Backend interface for SocketDock."""
 
     @abstractmethod
-    async def socket_connected(
-        self, callback_uris: dict
-    ):
+    async def socket_connected(self, callback_uris: dict):
         """Handle new socket connections, with calback provided."""
         raise NotImplementedError()
 

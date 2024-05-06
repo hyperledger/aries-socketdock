@@ -23,3 +23,18 @@ pre-commit = "^3.2.2"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 90
+
+[tool.ruff.lint]
+select = ["E", "F", "C", "D"]
+ignore = [
+    # Google Python Doc Style
+    "D203", "D204", "D213", "D215", "D400", "D401", "D404", "D406", "D407",
+    "D408", "D409", "D413",
+]
+per-file-ignores = {"**/{tests}/*" = ["F841", "D", "E501"]}
+
+[tool.ruff.format]
+docstring-code-format = true

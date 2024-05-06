@@ -9,9 +9,7 @@ from .backend import Backend
 class TestBackend(Backend):
     """Test backend for SocketDock."""
 
-    async def socket_connected(
-        self, callback_uris: dict
-    ):
+    async def socket_connected(self, callback_uris: dict):
         # This test method doesn't care, but can be useful to clean up state.
         pass
 
