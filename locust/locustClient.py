@@ -3,17 +3,10 @@ from flask import Flask
 
 import time
 import inspect
-import json
 
-import fcntl
-import os
-import requests
-import signal
 
-from websocket import create_connection
 import websocket
 
-import sys
 import gevent
 
 gevent.monkey.patch_all()
@@ -64,7 +57,6 @@ class InboundHTTP(metaclass=Singleton):
     _self = None
 
     def __init__(self):
-
         app = Flask(__name__)
 
         @app.route("/")
@@ -98,7 +90,7 @@ class CustomClient:
     def startup(self):
         # print("startup", file=sys.stderr)
 
-        server = InboundHTTP()
+        InboundHTTP()
 
         # Give a sec for the inbound server to start
         time.sleep(5)  # Magic Number
@@ -134,7 +126,7 @@ class CustomClient:
     @stopwatch
     def msg_client(self):
         i = ""
-        if self.connected == False:
+        if self.connected is False:
             raise Exception("Not Connected!")
         self.ws.send(f"Ping! ({i})")
         pass
