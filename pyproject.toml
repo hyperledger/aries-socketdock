@@ -26,6 +26,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
 line-length = 90
+extend-exclude = ["locust"]
 
 [tool.ruff.lint]
 select = ["E", "F", "C", "D"]

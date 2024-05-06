@@ -78,6 +78,9 @@ async def socket_handler(request: Request, websocket: Websocket):
     global lifetime_connections
     backend = backend_var.get()
     socket_id = None
+    endpoint = endpoint_var.get()
+    send = f"{endpoint}/socket/{socket_id}/send"
+    disconnect = f"{endpoint_var.get()}/socket/{socket_id}/disconnect"
     try:
         # register user
         LOGGER.info("new client connected")
@@ -92,8 +95,8 @@ async def socket_handler(request: Request, websocket: Websocket):
             {
                 "connection_id": socket_id,
                 "headers": dict(request.headers.items()),
-                "send": f"{endpoint_var.get()}/socket/{socket_id}/send",
-                "disconnect": f"{endpoint_var.get()}/socket/{socket_id}/disconnect",
+                "send": send,
+                "disconnect": disconnect,
             },
         )
 
@@ -102,8 +105,8 @@ async def socket_handler(request: Request, websocket: Websocket):
                 await backend.inbound_socket_message(
                     {
                         "connection_id": socket_id,
-                        "send": f"{endpoint_var.get()}/socket/{socket_id}/send",
-                        "disconnect": f"{endpoint_var.get()}/socket/{socket_id}/disconnect",
+                        "send": send,
+                        "disconnect": disconnect,
                     },
                     message,
                 )
