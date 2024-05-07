@@ -23,5 +23,5 @@ services:
     # parser.add_argument('--disconnect_uri')
 
   tunnel:
-    image: dbluhm/agent-tunnel
+    image: ghcr.io/indicio-tech/agent-tunnel:latest
     command: -s websocket-gateway:8765 -p 4040 -h ${AGENT_TUNNEL_HOST}

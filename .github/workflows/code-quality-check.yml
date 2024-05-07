@@ -1,0 +1,23 @@
+name: Code Quality Check
+
+"on":
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  format:
+    name: Format and Lint Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: chartboost/ruff-action@v1
+        with:
+          version: "0.4.3"
+          args: 'format --check'
+      - uses: chartboost/ruff-action@v1
+        with:
+          version: "0.4.3"

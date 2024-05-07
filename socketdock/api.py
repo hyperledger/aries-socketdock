@@ -51,11 +51,12 @@ async def socket_send(request: Request, connectionid: str):
         return text("FAIL", status=500)
 
     socket = active_connections[connectionid]
-    if request.headers["content-type"] == 'text/plain':
+    if request.headers["content-type"] == "text/plain":
         await socket.send(request.body.decode())
     else:
         await socket.send(request.body)
     return text("OK")
+
 
 @api.post("/socket/<connectionid>/disconnect")
 async def socket_disconnect(request: Request, connectionid: str):
@@ -70,12 +71,16 @@ async def socket_disconnect(request: Request, connectionid: str):
     await socket.close()
     return text("OK")
 
+
 @api.websocket("/ws")
 async def socket_handler(request: Request, websocket: Websocket):
     """Handle a new websocket connection."""
     global lifetime_connections
     backend = backend_var.get()
     socket_id = None
+    endpoint = endpoint_var.get()
+    send = f"{endpoint}/socket/{socket_id}/send"
+    disconnect = f"{endpoint_var.get()}/socket/{socket_id}/disconnect"
     try:
         # register user
         LOGGER.info("new client connected")
@@ -87,12 +92,12 @@ async def socket_handler(request: Request, websocket: Websocket):
         LOGGER.info("Request headers: %s", dict(request.headers.items()))
 
         await backend.socket_connected(
-                {
+            {
                 "connection_id": socket_id,
                 "headers": dict(request.headers.items()),
-                "send": f"{endpoint_var.get()}/socket/{socket_id}/send",
-                "disconnect": f"{endpoint_var.get()}/socket/{socket_id}/disconnect",
-                },
+                "send": send,
+                "disconnect": disconnect,
+            },
         )
 
         async for message in websocket:
@@ -100,8 +105,8 @@ async def socket_handler(request: Request, websocket: Websocket):
                 await backend.inbound_socket_message(
                     {
                         "connection_id": socket_id,
-                        "send": f"{endpoint_var.get()}/socket/{socket_id}/send",
-                        "disconnect": f"{endpoint_var.get()}/socket/{socket_id}/disconnect",                       
+                        "send": send,
+                        "disconnect": disconnect,
                     },
                     message,
                 )

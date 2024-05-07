@@ -20,11 +20,8 @@ class HTTPBackend(Backend):
         self._message_uri = message_uri
         self._disconnect_uri = disconnect_uri
 
-    async def socket_connected(
-        self, callback_uris: dict
-    ):
+    async def socket_connected(self, callback_uris: dict):
         """Handle inbound socket message, with calback provided."""
-
         http_body = {
             "meta": callback_uris,
         }
@@ -43,12 +40,9 @@ class HTTPBackend(Backend):
         self, callback_uris: dict, message: Union[str, bytes]
     ):
         """Handle inbound socket message, with calback provided."""
-
         http_body = {
             "meta": callback_uris,
-            "message": message.decode("utf-8")
-            if isinstance(message, bytes)
-            else message,
+            "message": message.decode("utf-8") if isinstance(message, bytes) else message,
         }
 
         async with aiohttp.ClientSession() as session:
@@ -62,7 +56,6 @@ class HTTPBackend(Backend):
 
     async def socket_disconnected(self, bundle: dict):
         """Handle socket disconnected."""
-
         async with aiohttp.ClientSession() as session:
             LOGGER.info("Notifying of disconnect: %s %s", self._disconnect_uri, bundle)
             async with session.post(self._disconnect_uri, json=bundle) as resp:

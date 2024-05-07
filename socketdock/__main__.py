@@ -9,7 +9,6 @@ from .api import api, backend_var, endpoint_var
 
 def config() -> argparse.Namespace:
     """Parse command line arguments."""
-
     parser = argparse.ArgumentParser(
         prog="SocketDock", description="Socket Gateway for configurable backends"
     )
@@ -31,7 +30,6 @@ def config() -> argparse.Namespace:
 
 def main():
     """Run the SocketDock server."""
-
     args = config()
     if args.backend == "loopback":
         from .testbackend import TestBackend
