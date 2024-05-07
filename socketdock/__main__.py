@@ -4,7 +4,7 @@ import logging
 import argparse
 from sanic import Sanic
 
-from .api import api, backend_var, endpoint_var
+from .api import api, backend_var
 
 
 def config() -> argparse.Namespace:
@@ -38,12 +38,13 @@ def main():
     elif args.backend == "http":
         from .httpbackend import HTTPBackend
 
-        backend = HTTPBackend(args.connect_uri, args.message_uri, args.disconnect_uri)
+        backend = HTTPBackend(
+            args.endpoint, args.connect_uri, args.message_uri, args.disconnect_uri
+        )
     else:
         raise ValueError("Invalid backend type")
 
     backend_var.set(backend)
-    endpoint_var.set(args.endpoint)
 
     logging.basicConfig(level=args.log_level)
 

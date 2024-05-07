@@ -9,7 +9,6 @@ from sanic import Blueprint, Request, Websocket, json, text
 from .backend import Backend
 
 backend_var: ContextVar[Backend] = ContextVar("backend")
-endpoint_var: ContextVar[str] = ContextVar("endpoint")
 
 api = Blueprint("api", url_prefix="/")
 
@@ -78,9 +77,6 @@ async def socket_handler(request: Request, websocket: Websocket):
     global lifetime_connections
     backend = backend_var.get()
     socket_id = None
-    endpoint = endpoint_var.get()
-    send = f"{endpoint}/socket/{socket_id}/send"
-    disconnect = f"{endpoint_var.get()}/socket/{socket_id}/disconnect"
     try:
         # register user
         LOGGER.info("new client connected")
@@ -92,23 +88,15 @@ async def socket_handler(request: Request, websocket: Websocket):
         LOGGER.info("Request headers: %s", dict(request.headers.items()))
 
         await backend.socket_connected(
-            {
-                "connection_id": socket_id,
-                "headers": dict(request.headers.items()),
-                "send": send,
-                "disconnect": disconnect,
-            },
+            connection_id=socket_id,
+            headers=dict(request.headers.items()),
         )
 
         async for message in websocket:
             if message:
                 await backend.inbound_socket_message(
-                    {
-                        "connection_id": socket_id,
-                        "send": send,
-                        "disconnect": disconnect,
-                    },
-                    message,
+                    connection_id=socket_id,
+                    message=message,
                 )
             else:
                 LOGGER.warning("empty message received")
@@ -118,4 +106,4 @@ async def socket_handler(request: Request, websocket: Websocket):
         if socket_id:
             del active_connections[socket_id]
             LOGGER.info("Removed connection: %s", socket_id)
-            await backend.socket_disconnected({"connection_id": socket_id})
+            await backend.socket_disconnected(socket_id)
