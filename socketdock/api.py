@@ -44,7 +44,7 @@ async def status_handler(request: Request):
 async def socket_send(request: Request, connectionid: str):
     """Send a message to a connected socket."""
     LOGGER.info("Inbound message for %s", connectionid)
-    LOGGER.info("Existing connections: %s", active_connections.keys())
+    LOGGER.debug("Existing connections: %s", active_connections.keys())
 
     if connectionid not in active_connections:
         return text("FAIL", status=500)
@@ -61,7 +61,7 @@ async def socket_send(request: Request, connectionid: str):
 async def socket_disconnect(request: Request, connectionid: str):
     """Disconnect a socket."""
     LOGGER.info("Disconnect %s", connectionid)
-    LOGGER.info("Existing connections: %s", active_connections.keys())
+    LOGGER.debug("Existing connections: %s", active_connections.keys())
 
     if connectionid not in active_connections:
         return text("FAIL", status=500)
@@ -80,12 +80,12 @@ async def socket_handler(request: Request, websocket: Websocket):
     try:
         # register user
         LOGGER.info("new client connected")
-        socket_id = websocket.connection.id.hex
+        socket_id = websocket.ws_proto.id.hex
         active_connections[socket_id] = websocket
         lifetime_connections += 1
-        LOGGER.info("Existing connections: %s", active_connections.keys())
-        LOGGER.info("Added connection: %s", socket_id)
-        LOGGER.info("Request headers: %s", dict(request.headers.items()))
+        LOGGER.debug("Existing connections: %s", active_connections.keys())
+        LOGGER.debug("Added connection: %s", socket_id)
+        LOGGER.debug("Request headers: %s", dict(request.headers.items()))
 
         await backend.socket_connected(
             connection_id=socket_id,

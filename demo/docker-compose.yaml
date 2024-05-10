@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  websocket-gateway:
+  socketdock:
     build: ..
     ports:
       - "8765:8765"
@@ -9,15 +9,8 @@ services:
       - ../socketdock:/usr/src/app/socketdock:z
     command: >
       --bindip 0.0.0.0
-      --backend http
-      --message-uri ${LAMBDA_ENDPOINT}
-      --disconnect-uri ${LAMBDA_DISCONNECT_ENDPOINT}
-      --endpoint ${EXTERNAL_ENDPOINT}
-
-    # Socket Dock Parameters:
-    # parser.add_argument('--bindip', default='127.0.0.1')
-    # parser.add_argument('--bindport', default=8765)
-    # parser.add_argument('--externalhostandport', default="127.0.0.1:8765")
-    # parser.add_argument('--backend', default="loopback", choices=["loopback", "http"])
-    # parser.add_argument('--message_uri')
-    # parser.add_argument('--disconnect_uri')
+      --backend loopback
+      --message-uri https://example.com
+      --disconnect-uri https://example.com
+      --endpoint http://socketdock:8765
+      --log-level INFO

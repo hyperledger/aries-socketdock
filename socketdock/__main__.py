@@ -34,7 +34,7 @@ def main():
     if args.backend == "loopback":
         from .testbackend import TestBackend
 
-        backend = TestBackend()
+        backend = TestBackend(args.endpoint)
     elif args.backend == "http":
         from .httpbackend import HTTPBackend
 

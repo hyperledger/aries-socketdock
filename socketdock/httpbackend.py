@@ -29,11 +29,11 @@ class HTTPBackend(Backend):
 
     def send_callback(self, connection_id: str) -> str:
         """Return the callback URI for sending a message to a connected socket."""
-        return f"{self.socket_base_uri}/{connection_id}/send"
+        return f"{self.socket_base_uri}/socket/{connection_id}/send"
 
     def disconnect_callback(self, connection_id: str) -> str:
         """Return the callback URI for disconnecting a connected socket."""
-        return f"{self.socket_base_uri}/{connection_id}/disconnect"
+        return f"{self.socket_base_uri}/socket/{connection_id}/disconnect"
 
     def callback_uris(self, connection_id: str) -> Dict[str, str]:
         """Return labelled callback URIs."""
