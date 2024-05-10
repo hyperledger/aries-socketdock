@@ -9,7 +9,6 @@ from sanic import Blueprint, Request, Websocket, json, text
 from .backend import Backend
 
 backend_var: ContextVar[Backend] = ContextVar("backend")
-endpoint_var: ContextVar[str] = ContextVar("endpoint")
 
 api = Blueprint("api", url_prefix="/")
 
@@ -45,7 +44,7 @@ async def status_handler(request: Request):
 async def socket_send(request: Request, connectionid: str):
     """Send a message to a connected socket."""
     LOGGER.info("Inbound message for %s", connectionid)
-    LOGGER.info("Existing connections: %s", active_connections.keys())
+    LOGGER.debug("Existing connections: %s", active_connections.keys())
 
     if connectionid not in active_connections:
         return text("FAIL", status=500)
@@ -62,7 +61,7 @@ async def socket_send(request: Request, connectionid: str):
 async def socket_disconnect(request: Request, connectionid: str):
     """Disconnect a socket."""
     LOGGER.info("Disconnect %s", connectionid)
-    LOGGER.info("Existing connections: %s", active_connections.keys())
+    LOGGER.debug("Existing connections: %s", active_connections.keys())
 
     if connectionid not in active_connections:
         return text("FAIL", status=500)
@@ -78,37 +77,26 @@ async def socket_handler(request: Request, websocket: Websocket):
     global lifetime_connections
     backend = backend_var.get()
     socket_id = None
-    endpoint = endpoint_var.get()
-    send = f"{endpoint}/socket/{socket_id}/send"
-    disconnect = f"{endpoint_var.get()}/socket/{socket_id}/disconnect"
     try:
         # register user
         LOGGER.info("new client connected")
-        socket_id = websocket.connection.id.hex
+        socket_id = websocket.ws_proto.id.hex
         active_connections[socket_id] = websocket
         lifetime_connections += 1
-        LOGGER.info("Existing connections: %s", active_connections.keys())
-        LOGGER.info("Added connection: %s", socket_id)
-        LOGGER.info("Request headers: %s", dict(request.headers.items()))
+        LOGGER.debug("Existing connections: %s", active_connections.keys())
+        LOGGER.debug("Added connection: %s", socket_id)
+        LOGGER.debug("Request headers: %s", dict(request.headers.items()))
 
         await backend.socket_connected(
-            {
-                "connection_id": socket_id,
-                "headers": dict(request.headers.items()),
-                "send": send,
-                "disconnect": disconnect,
-            },
+            connection_id=socket_id,
+            headers=dict(request.headers.items()),
         )
 
         async for message in websocket:
             if message:
                 await backend.inbound_socket_message(
-                    {
-                        "connection_id": socket_id,
-                        "send": send,
-                        "disconnect": disconnect,
-                    },
-                    message,
+                    connection_id=socket_id,
+                    message=message,
                 )
             else:
                 LOGGER.warning("empty message received")
@@ -118,4 +106,4 @@ async def socket_handler(request: Request, websocket: Websocket):
         if socket_id:
             del active_connections[socket_id]
             LOGGER.info("Removed connection: %s", socket_id)
-            await backend.socket_disconnected({"connection_id": socket_id})
+            await backend.socket_disconnected(socket_id)

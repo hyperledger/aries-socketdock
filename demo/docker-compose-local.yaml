@@ -2,11 +2,10 @@ version: '3'
 
 services:
   websocket-gateway:
-    build: .
+    build: ..
     ports:
       - "8765:8765"
     volumes:
-      - ./server:/code
       - ./wait-for-tunnel.sh:/wait-for-tunnel.sh:ro,z
     entrypoint: /wait-for-tunnel.sh
     command: >

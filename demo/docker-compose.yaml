@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  socketdock:
+    build: ..
+    ports:
+      - "8765:8765"
+    volumes:
+      - ../socketdock:/usr/src/app/socketdock:z
+    command: >
+      --bindip 0.0.0.0
+      --backend loopback
+      --message-uri https://example.com
+      --disconnect-uri https://example.com
+      --endpoint http://socketdock:8765
+      --log-level INFO

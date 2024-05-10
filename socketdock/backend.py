@@ -1,25 +1,28 @@
 """Backend interface for SocketDock."""
 
 from abc import ABC, abstractmethod
-from typing import Union
+from typing import Dict, Union
 
 
 class Backend(ABC):
     """Backend interface for SocketDock."""
 
     @abstractmethod
-    async def socket_connected(self, callback_uris: dict):
+    async def socket_connected(
+        self,
+        connection_id: str,
+        headers: Dict[str, str],
+    ):
         """Handle new socket connections, with calback provided."""
-        raise NotImplementedError()
 
     @abstractmethod
     async def inbound_socket_message(
-        self, callback_uris: dict, message: Union[str, bytes]
+        self,
+        connection_id: str,
+        message: Union[str, bytes],
     ):
         """Handle inbound socket message, with calback provided."""
-        raise NotImplementedError()
 
     @abstractmethod
-    async def socket_disconnected(self, bundle: dict):
+    async def socket_disconnected(self, connection_id: str):
         """Handle socket disconnected."""
-        raise NotImplementedError()

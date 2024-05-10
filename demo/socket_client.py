@@ -14,4 +14,5 @@ async def hello():
             print(f"< {response}", flush=True)
 
 
-asyncio.run(hello())
+if __name__ == "__main__":
+    asyncio.run(hello())
